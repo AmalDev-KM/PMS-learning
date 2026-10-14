@@ -1,0 +1,25 @@
+import express from "express";
+import cors from "cors";
+
+import departmentRoutes from "./routes/department.routes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Health-check route
+app.get("/api/health", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "PMS API is running",
+  });
+});
+
+app.use("/api/departments", departmentRoutes);
+
+// Keep the error handler after all routes.
+app.use(errorHandler);
+
+export default app;
