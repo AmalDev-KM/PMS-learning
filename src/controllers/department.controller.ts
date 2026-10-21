@@ -48,7 +48,7 @@ export const getDepartmentById = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
     const department = await departmentService.getDepartmentById(
       req.params.id as string,
@@ -67,7 +67,7 @@ export const updateDepartment = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
     const data = req.body as UpdateDepartmentInput;
 
@@ -90,7 +90,7 @@ export const deleteDepartment = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
     const department = await departmentService.deleteDepartment(
       req.params.id as string,

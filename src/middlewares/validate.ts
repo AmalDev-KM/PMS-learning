@@ -1,43 +1,24 @@
 import type { Request, Response, NextFunction, RequestHandler } from "express";
-import type { ZodType } from "zod";
+import { validationResult } from "express-validator";
 
-export const validateBody = (schema: ZodType): RequestHandler => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    const result = schema.safeParse(req.body);
+export const validate: RequestHandler = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
+  const errors = validationResult(req);
 
-    if (!result.success) {
-      res.status(400).json({
-        success: false,
-        message: "Request validation failed",
-        errors: result.error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          message: issue.message,
-        })),
-      });
-      return;
-    }
+  if (!errors.isEmpty()) {
+    res.status(400).json({
+      success: false,
+      message: "Request validation failed",
+      errors: errors.array().map((error) => ({
+        field: error.type === "field" ? error.path : "request",
+        message: error.msg,
+      })),
+    });
+    return;
+  }
 
-    req.body = result.data;
-    next();
-  };
-};
-
-export const validateParams = (schema: ZodType): RequestHandler => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    const result = schema.safeParse(req.params);
-
-    if (!result.success) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid route parameters",
-        errors: result.error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          message: issue.message,
-        })),
-      });
-      return;
-    }
-
-    next();
-  };
+  next();
 };

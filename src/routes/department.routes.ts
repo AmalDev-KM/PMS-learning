@@ -1,20 +1,18 @@
 import { Router } from "express";
-
 import * as departmentController from "../controllers/department.controller.js";
-
 import {
-  createDepartmentSchema,
-  updateDepartmentSchema,
-  departmentIdSchema,
+  createDepartmentRules,
+  updateDepartmentRules,
+  departmentIdRules,
 } from "../validators/department.validator.js";
-
-import { validateBody, validateParams } from "../middlewares/validate.js";
+import { validate } from "../middlewares/validate.js";
 
 const router = Router();
 
 router.post(
   "/",
-  validateBody(createDepartmentSchema),
+  createDepartmentRules,
+  validate,
   departmentController.createDepartment,
 );
 
@@ -22,20 +20,23 @@ router.get("/", departmentController.getAllDepartments);
 
 router.get(
   "/:id",
-  validateParams(departmentIdSchema),
+  departmentIdRules,
+  validate,
   departmentController.getDepartmentById,
 );
 
 router.patch(
   "/:id",
-  validateParams(departmentIdSchema),
-  validateBody(updateDepartmentSchema),
+  departmentIdRules,
+  updateDepartmentRules,
+  validate,
   departmentController.updateDepartment,
 );
 
 router.delete(
   "/:id",
-  validateParams(departmentIdSchema),
+  departmentIdRules,
+  validate,
   departmentController.deleteDepartment,
 );
 

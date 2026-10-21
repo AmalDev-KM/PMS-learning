@@ -1,51 +1,123 @@
-import { z } from "zod";
+import { body, param } from "express-validator";
 
-export const createDepartmentSchema = z
-  .object({
-    name: z.string().trim().min(2).max(100),
+export interface CreateDepartmentInput {
+  name: string;
+  code: string;
+  description?: string;
+  location?: string;
+  status?: "active" | "inactive";
+}
 
-    code: z
-      .string()
-      .trim()
-      .min(2)
-      .max(10)
-      .regex(/^[A-Za-z0-9_-]+$/)
-      .transform((value) => value.toUpperCase()),
+export interface UpdateDepartmentInput {
+  name?: string;
+  code?: string;
+  description?: string;
+  location?: string;
+  status?: "active" | "inactive";
+}
 
-    description: z.string().trim().max(500).optional(),
-    location: z.string().trim().max(100).optional(),
-    status: z.enum(["active", "inactive"]).optional(),
-  })
-  .strict();
+export const createDepartmentRules = [
+  body("name")
+    .isString()
+    .withMessage("Name must be a string")
+    .bail()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Name must be between 2 and 100 characters"),
 
-export const updateDepartmentSchema = z
-  .object({
-    name: z.string().trim().min(2).max(100).optional(),
+  // body("code")
+  //   .isString()
+  //   .withMessage("Code must be a string")
+  //   .bail()
+  //   .trim()
+  //   .isLength({ min: 2, max: 10 })
+  //   .withMessage("Code must be between 2 and 10 characters")
+  //   .matches(/^[A-Za-z0-9_-]+$/)
+  //   .withMessage("Code can contain letters, numbers, underscores, and hyphens")
+  //   .toUpperCase(),
 
-    code: z
-      .string()
-      .trim()
-      .min(2)
-      .max(10)
-      .regex(/^[A-Za-z0-9_-]+$/)
-      .transform((value) => value.toUpperCase())
-      .optional(),
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("Description must be a string")
+    .bail()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Description cannot exceed 500 characters"),
 
-    description: z.string().trim().max(500).optional(),
-    location: z.string().trim().max(100).optional(),
-    status: z.enum(["active", "inactive"]).optional(),
-  })
-  .strict()
-  .refine((data) => Object.keys(data).length > 0, {
-    message: "At least one field must be provided",
-  });
+  body("location")
+    .optional()
+    .isString()
+    .withMessage("Location must be a string")
+    .bail()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Location cannot exceed 100 characters"),
 
-export const departmentIdSchema = z
-  .object({
-    id: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid department ID"),
-  })
-  .strict();
+  body("status")
+    .optional()
+    .isIn(["active", "inactive"])
+    .withMessage("Status must be active or inactive"),
+];
 
-export type CreateDepartmentInput = z.infer<typeof createDepartmentSchema>;
+export const updateDepartmentRules = [
+  body().custom((value) => {
+    if (
+      !value ||
+      typeof value !== "object" ||
+      Array.isArray(value) ||
+      Object.keys(value).length === 0
+    ) {
+      throw new Error("At least one field must be provided");
+    }
+    return true;
+  }),
 
-export type UpdateDepartmentInput = z.infer<typeof updateDepartmentSchema>;
+  body("name")
+    .optional()
+    .isString()
+    .withMessage("Name must be a string")
+    .bail()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Name must be between 2 and 100 characters"),
+
+  // body("code")
+  //   .optional()
+  //   .isString()
+  //   .withMessage("Code must be a string")
+  //   .bail()
+  //   .trim()
+  //   .isLength({ min: 2, max: 10 })
+  //   .withMessage("Code must be between 2 and 10 characters")
+  //   .matches(/^[A-Za-z0-9_-]+$/)
+  //   .withMessage("Invalid department code")
+  //   .toUpperCase(),
+
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("Description must be a string")
+    .bail()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Description cannot exceed 500 characters"),
+
+  body("location")
+    .optional()
+    .isString()
+    .withMessage("Location must be a string")
+    .bail()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage("Location cannot exceed 100 characters"),
+
+  body("status")
+    .optional()
+    .isIn(["active", "inactive"])
+    .withMessage("Status must be active or inactive"),
+];
+
+export const departmentIdRules = [
+  param("id").isMongoId().withMessage("Invalid department ID"),
+];

@@ -9,6 +9,12 @@ import type {
 } from "../validators/department.validator.js";
 
 export const createDepartment = async (data: CreateDepartmentInput) => {
+  const now = new Date();
+  data.code =
+    data.name.substring(0, 4) +
+    now.getDate() +
+    now.getHours() +
+    now.getMinutes();
   return await Department.create({
     ...data,
     status: data.status ?? "active",

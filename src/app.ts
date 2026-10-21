@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import departmentRoutes from "./routes/department.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const app = express();
@@ -17,6 +18,7 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+app.use("/api/auth", authRoutes);
 app.use("/api/departments", departmentRoutes);
 
 // Keep the error handler after all routes.
