@@ -11,12 +11,12 @@ export const createDepartment = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
     const data = req.body as CreateDepartmentInput;
     const department = await departmentService.createDepartment(data);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Department created successfully",
       data: department,
@@ -30,11 +30,11 @@ export const getAllDepartments = async (
   _req: Request,
   res: Response,
   next: NextFunction,
-): Promise<void> => {
+) => {
   try {
     const departments = await departmentService.getAllDepartments();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: departments.length,
       data: departments,
@@ -54,7 +54,7 @@ export const getDepartmentById = async (
       req.params.id as string,
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: department,
     });
@@ -76,7 +76,7 @@ export const updateDepartment = async (
       data,
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Department updated successfully",
       data: department,
@@ -96,7 +96,7 @@ export const deleteDepartment = async (
       req.params.id as string,
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Department deleted successfully",
       data: department,

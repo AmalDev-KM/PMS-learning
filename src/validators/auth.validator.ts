@@ -30,3 +30,21 @@ export const registerRules = [
     .exists()
     .withMessage("Role cannot be assigned during registration"),
 ];
+
+export const loginRules = [
+  body("email")
+    .isString()
+    .withMessage("Email must be a string")
+    .bail()
+    .trim()
+    .isEmail()
+    .withMessage("Enter a valid email address")
+    .normalizeEmail(),
+
+  body("password")
+    .isString()
+    .withMessage("Password must be a string")
+    .bail()
+    .notEmpty()
+    .withMessage("Password is required"),
+];
